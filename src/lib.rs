@@ -3,14 +3,11 @@ mod utils;
 use fixedbitset::FixedBitSet;
 use wasm_bindgen::prelude::*;
 
-/// It is important that we have #[repr(u8)], so that each cell is represented as a single byte.
-///  Dead variant is 0 and that the Alive variant is 1, so that we can easily count a cell's live neighbors with addition.
-#[wasm_bindgen]
-#[repr(u8)]
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
-pub enum Cell {
-    Dead = 0,
-    Alive = 1,
+// A macro to provide `println!(..)`-style syntax for `console.log` logging.
+macro_rules! log {
+    ( $( $t:tt )* ) => {
+        web_sys::console::log_1(&format!( $( $t )* ).into());
+    }
 }
 
 /// The universe has a width and a height, and a vector of cells of length width * height.
@@ -74,16 +71,28 @@ impl Universe {
                 let cell = self.cells[idx];
                 let live_neighbors = self.live_neighbor_count(row, col);
 
-                next.set(
-                    idx,
-                    match (cell, live_neighbors) {
-                        (true, x) if x < 2 => false,
-                        (true, 2) | (true, 3) => true,
-                        (true, x) if x > 3 => false,
-                        (false, 3) => true,
-                        (otherwise, _) => otherwise,
-                    },
+                log!(
+                    "cell[{}, {}] is initially {:?} and has {} live neighbors",
+                    row,
+                    col,
+                    cell,
+                    live_neighbors
                 );
+
+                let next_cell = match (cell, live_neighbors) {
+                    (true, x) if x < 2 => false,
+                    (true, 2) | (true, 3) => true,
+                    (true, x) if x > 3 => false,
+                    (false, 3) => true,
+                    (otherwise, _) => otherwise,
+                };
+
+                log!(
+                    "    it becomes {:?}",
+                    if next_cell { "Alive" } else { "Dead" }
+                );
+
+                next.set(idx, next_cell);
             }
         }
 
@@ -91,6 +100,10 @@ impl Universe {
     }
 
     pub fn new() -> Universe {
+        // Enable logging for panics
+        // Install the console_error_panic_hook in an initialization function for debugging
+        utils::set_panic_hook();
+
         let width = 64;
         let height = 64;
 

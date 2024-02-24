@@ -1,4 +1,4 @@
-import { Universe, Cell } from "wasm-game-of-life";
+import { Universe } from "wasm-game-of-life";
 
 // We can directly access WebAssembly's linear memory via memory, 
 // which is defined in the raw wasm module wasm_game_of_life_bg. 
@@ -32,6 +32,12 @@ canvas.width = (CELL_SIZE + 1) * width + 1;
 const ctx = canvas.getContext('2d');
 
 const renderLoop = () => {
+  // we can use the debugger to pause on each iteration of our renderLoop function 
+  // by placing a JavaScript debugger; statement above our call to universe.tick()
+  // This provides us with a convenient checkpoint for inspecting logged messages, 
+  // and comparing the currently rendered frame to the previous one.
+  debugger;
+
   universe.tick();
 
   drawGrid();
