@@ -1,7 +1,5 @@
 mod utils;
 
-use std::fmt;
-
 use fixedbitset::FixedBitSet;
 use wasm_bindgen::prelude::*;
 
@@ -96,10 +94,6 @@ impl Universe {
         }
     }
 
-    pub fn render(&self) -> String {
-        self.to_string()
-    }
-
     pub fn width(&self) -> u32 {
         self.width
     }
@@ -116,22 +110,5 @@ impl Universe {
 impl Default for Universe {
     fn default() -> Self {
         Self::new()
-    }
-}
-
-/// By implementing the Display trait from Rust's standard library,
-/// we can add a way to format a structure in a user-facing manner.
-/// This will also automatically give us a to_string method.
-impl fmt::Display for Universe {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        for line in self.cells.as_slice().chunks(self.width as usize) {
-            for &cell in line {
-                let symbol = if cell == Cell::Dead { '◻' } else { '◼' };
-                write!(f, "{}", symbol)?;
-            }
-            writeln!(f)?;
-        }
-
-        Ok(())
     }
 }
