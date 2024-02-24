@@ -144,6 +144,28 @@ const drawCells = () => {
   ctx.stroke();
 };
 
+// we listen to click events on the <canvas> element, 
+// translate the click event's page-relative coordinates into canvas-relative coordinates, 
+// and then into a row and column, invoke the toggle_cell method, and finally redraw the scene.
+canvas.addEventListener("click", event => {
+  const boundingRect = canvas.getBoundingClientRect();
+
+  const scaleX = canvas.width / boundingRect.width;
+  const scaleY = canvas.height / boundingRect.height;
+
+  const canvasLeft = (event.clientX - boundingRect.left) * scaleX;
+  const canvasTop = (event.clientY - boundingRect.top) * scaleY;
+
+  const row = Math.min(Math.floor(canvasTop / (CELL_SIZE + 1)), height - 1);
+  const col = Math.min(Math.floor(canvasLeft / (CELL_SIZE + 1)), width - 1);
+
+  universe.toggle_cell(row, col);
+
+  drawGrid();
+  drawCells();
+});
+
+
 // To start the rendering process, 
 // we'll use the same code as above to start the first iteration of the rendering loop:
 //

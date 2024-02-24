@@ -57,6 +57,10 @@ impl Universe {
             self.cells.set(idx, true);
         }
     }
+
+    fn toggle(&mut self, idx: usize) {
+        self.cells.set(idx, !self.cells[idx]);
+    }
 }
 
 /// Public methods, exported to JavaScript.
@@ -151,6 +155,11 @@ impl Universe {
         self.height = height;
         let size = (self.width * height) as usize;
         self.cells = FixedBitSet::with_capacity(size);
+    }
+
+    pub fn toggle_cell(&mut self, row: u32, column: u32) {
+        let idx = self.get_index(row, column);
+        self.cells.toggle(idx);
     }
 }
 
