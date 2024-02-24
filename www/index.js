@@ -31,12 +31,15 @@ canvas.width = (CELL_SIZE + 1) * width + 1;
 
 const ctx = canvas.getContext('2d');
 
+// When there is no queued animation frame, we set this variable to null
+let animationId = null;
+
 const renderLoop = () => {
   // we can use the debugger to pause on each iteration of our renderLoop function 
   // by placing a JavaScript debugger; statement above our call to universe.tick()
   // This provides us with a convenient checkpoint for inspecting logged messages, 
   // and comparing the currently rendered frame to the previous one.
-  debugger;
+  // debugger;
 
   universe.tick();
 
@@ -45,8 +48,37 @@ const renderLoop = () => {
 
   // To start the rendering process, 
   // all we have to do is make the initial call for the first iteration of the rendering loop
-  requestAnimationFrame(renderLoop);
+  // 
+  // The result of `requestAnimationFrame` is assigned to `animationId`
+  animationId = requestAnimationFrame(renderLoop);
 };
+
+// At any instant in time, we can tell whether the game is paused or not 
+// by inspecting the value of animationId:
+const isPaused = () => {
+  return animationId === null;
+};
+
+const playPauseButton = document.getElementById("play-pause");
+
+const play = () => {
+  playPauseButton.textContent = "⏸";
+  renderLoop();
+};
+
+const pause = () => {
+  playPauseButton.textContent = "▶";
+  cancelAnimationFrame(animationId);
+  animationId = null;
+};
+
+playPauseButton.addEventListener("click", event => {
+  if (isPaused()) {
+    play();
+  } else {
+    pause();
+  }
+});
 
 // To draw the grid between cells, we draw a set of equally-spaced horizontal lines, 
 // and a set of equally-spaced vertical lines. These lines criss-cross to form the grid.
@@ -124,4 +156,5 @@ const drawCells = () => {
 // which is the second "tick" of the life of these cells.
 drawGrid();
 drawCells();
-requestAnimationFrame(renderLoop);
+// This used to be requestAnimationFrame(renderLoop);
+play();

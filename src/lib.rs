@@ -4,11 +4,11 @@ use fixedbitset::FixedBitSet;
 use wasm_bindgen::prelude::*;
 
 // A macro to provide `println!(..)`-style syntax for `console.log` logging.
-macro_rules! log {
-    ( $( $t:tt )* ) => {
-        web_sys::console::log_1(&format!( $( $t )* ).into());
-    }
-}
+// macro_rules! log {
+//     ( $( $t:tt )* ) => {
+//         web_sys::console::log_1(&format!( $( $t )* ).into());
+//     }
+// }
 
 /// The universe has a width and a height, and a vector of cells of length width * height.
 #[wasm_bindgen]
@@ -71,13 +71,14 @@ impl Universe {
                 let cell = self.cells[idx];
                 let live_neighbors = self.live_neighbor_count(row, col);
 
-                log!(
-                    "cell[{}, {}] is initially {:?} and has {} live neighbors",
-                    row,
-                    col,
-                    cell,
-                    live_neighbors
-                );
+                // This is equavalent of console.log in javascript
+                // log!(
+                //     "cell[{}, {}] is initially {:?} and has {} live neighbors",
+                //     row,
+                //     col,
+                //     cell,
+                //     live_neighbors
+                // );
 
                 let next_cell = match (cell, live_neighbors) {
                     (true, x) if x < 2 => false,
@@ -87,10 +88,11 @@ impl Universe {
                     (otherwise, _) => otherwise,
                 };
 
-                log!(
-                    "    it becomes {:?}",
-                    if next_cell { "Alive" } else { "Dead" }
-                );
+                // This is equavalent of console.log in javascript
+                // log!(
+                //     "    it becomes {:?}",
+                //     if next_cell { "Alive" } else { "Dead" }
+                // );
 
                 next.set(idx, next_cell);
             }
