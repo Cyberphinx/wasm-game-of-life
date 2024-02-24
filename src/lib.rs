@@ -134,14 +134,14 @@ impl Universe {
         // Install the console_error_panic_hook in an initialization function for debugging
         utils::set_panic_hook();
 
-        let width = 64;
-        let height = 64;
+        let width = 256;
+        let height = 128;
 
         let size = (width * height) as usize;
         let mut cells = FixedBitSet::with_capacity(size);
 
         for i in 0..size {
-            cells.set(i, i % 2 == 0 || i % 7 == 0);
+            cells.set(i, js_sys::Math::random() < 0.5);
         }
 
         Universe {
