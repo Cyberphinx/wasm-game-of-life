@@ -109,6 +109,24 @@ impl Universe {
     pub fn render(&self) -> String {
         self.to_string()
     }
+
+    pub fn width(&self) -> u32 {
+        self.width
+    }
+
+    pub fn height(&self) -> u32 {
+        self.height
+    }
+
+    pub fn cells(&self) -> *const Cell {
+        self.cells.as_ptr()
+    }
+}
+
+impl Default for Universe {
+    fn default() -> Self {
+        Self::new()
+    }
 }
 
 /// By implementing the Display trait from Rust's standard library,
@@ -121,7 +139,7 @@ impl fmt::Display for Universe {
                 let symbol = if cell == Cell::Dead { '◻' } else { '◼' };
                 write!(f, "{}", symbol)?;
             }
-            write!(f, "\n")?;
+            writeln!(f)?;
         }
 
         Ok(())
