@@ -2,6 +2,7 @@ mod utils;
 
 use fixedbitset::FixedBitSet;
 use wasm_bindgen::prelude::*;
+use web_sys::console;
 
 // A macro to provide `println!(..)`-style syntax for `console.log` logging.
 // macro_rules! log {
@@ -16,6 +17,26 @@ pub struct Universe {
     width: u32,
     height: u32,
     cells: FixedBitSet,
+}
+
+/// Time Each Universe::tick with console.time and console.timeEnd
+/// Because there should be a corresponding console.timeEnd invocation for every console.time call
+/// it is convenient to wrap them both up in an RAII type:
+pub struct Timer<'a> {
+    name: &'a str,
+}
+
+impl<'a> Timer<'a> {
+    pub fn new(name: &'a str) -> Timer<'a> {
+        console::time_with_label(name);
+        Timer { name }
+    }
+}
+
+impl<'a> Drop for Timer<'a> {
+    fn drop(&mut self) {
+        console::time_end_with_label(self.name);
+    }
 }
 
 /// Private methods, not exported to JavaScript.
@@ -58,7 +79,7 @@ impl Universe {
         }
     }
 
-    fn toggle(&mut self, idx: usize) {
+    pub fn toggle(&mut self, idx: usize) {
         self.cells.set(idx, !self.cells[idx]);
     }
 }
@@ -67,6 +88,9 @@ impl Universe {
 #[wasm_bindgen]
 impl Universe {
     pub fn tick(&mut self) {
+        // time how long each Universe::tick takes by adding this snippet to the top of the method:
+        let _timer = Timer::new("Universe::tick");
+
         let mut next = self.cells.clone();
 
         for row in 0..self.height {
